@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="15" height="12" viewBox="0 0 15 12">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #515151;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="Unordered_List" data-name="Unordered List" class="cls-1" d="M389,122h11v2H389v-2Zm-4,0h2v2h-2v-2Zm4,5h11v2H389v-2Zm-4,0h2v2h-2v-2Zm4,5h11v2H389v-2Zm-4,0h2v2h-2v-2Z" transform="translate(-385 -122)"/>
+</svg>

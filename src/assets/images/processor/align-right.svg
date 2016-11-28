@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" viewBox="0 0 14 12">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #515151;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="Right_Align" data-name="Right Align" class="cls-1" d="M528,127h8v2h-8v-2Zm-6,5h14v2H522v-2Zm0-10h14v2H522v-2Z" transform="translate(-522 -122)"/>
+</svg>

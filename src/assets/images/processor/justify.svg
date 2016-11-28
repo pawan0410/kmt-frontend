@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="14" height="12" viewBox="0 0 14 12">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #515151;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="Justify" class="cls-1" d="M556,127h14v2H556v-2Zm0,5h14v2H556v-2Zm0-10h14v2H556v-2Z" transform="translate(-556 -122)"/>
+</svg>

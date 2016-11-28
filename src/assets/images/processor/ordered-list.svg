@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #515151;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="Ordered_List" data-name="Ordered List" class="cls-1" d="M425,122h11v2H425v-2Zm0,5h11v2H425v-2Zm0,5h11v2H425v-2Zm-5-11h2v3h1v1h-3v-1h1v-2h-1v-1Zm0,5h3v2h-1v1h1v1h-3v-1h1v-1h1v-1h-2v-1Zm0,5h3v4h-3v-1h2v-1h-1v-1h-1v-1" transform="translate(-420 -121)"/>
+</svg>
