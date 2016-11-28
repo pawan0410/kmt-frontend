@@ -1,3 +1,3 @@
 # KMT Frontend
 
-Front end application for the Knowledge Management Tool
+Frontend application for the Knowledge Management Tool
