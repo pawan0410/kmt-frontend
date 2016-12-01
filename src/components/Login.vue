@@ -6,7 +6,20 @@ import { mapGetters } from "vuex";
 import auth   from "../api/auth";
 import C      from "../helpers";
 
+/**
+ * Login Vue instance.
+ * Provides a login form for the user to get authenticated.
+ * @type {Vue}
+ * @namespace LoginVue
+*/
 export default {
+
+    /**
+     * Local state generator.
+     * @function data
+     * @memberof LoginVue
+     * @returns {Object} List of local state default values.
+     */
     data: () => {
 
         /* Get the last email we logged in with. */
@@ -20,6 +33,12 @@ export default {
             working: false
         };
     },
+
+    /**
+     * Computed properties.
+     * @type {Object}
+     * @memberof LoginVue
+     */
     computed: {
         ...mapGetters({
             companyName: "companyName",
@@ -28,8 +47,24 @@ export default {
             authenticated: "authenticated"
         })
     },
+
+    /**
+     * List of methods used within the view.
+     * @type {Object}
+     * @memberof LoginVue
+     */
     methods: {
+
+        /**
+         * When the user clicks the login button, we call this method.
+         * @function authenticate
+         * @param {String} email Email provided by the user..
+         * @param {String} password password provided by the user
+         * @returns {void}
+         */
         authenticate( email, password ) {
+
+            /* To avoid button spamming. */
             if( this.working )
                 return;
 
@@ -44,8 +79,11 @@ export default {
             if( email )
                 localStorage.setItem( "lastEmail", email );
 
+            /* Execute API authentication. */
             auth.authenticate(
                 { email, password },
+
+                /* Success callback */
                 ( data ) => {
 
                     /* Show the success icon. */
@@ -65,6 +103,8 @@ export default {
                         // router.replace( "files" );
                     }, 2000 );
                 },
+
+                /* Failure callback. */
                 ( data ) => {
                     C( "Authentication failed!", false, 1 );
 

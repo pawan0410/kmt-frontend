@@ -1,4 +1,6 @@
 <script>
+/* © AIG Business. See LICENSE file for full copyright & licensing details. */
+
 export default {};
 </script>
 

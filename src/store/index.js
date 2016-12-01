@@ -7,9 +7,22 @@ import app       from "./modules/app";
 import files     from "./modules/files";
 import processor from "./modules/processor";
 
+/* Activate Flux state management. */
 Vue.use( Vuex );
 
+/**
+ * Main application Vuex state store.
+ * This is where we'll handle all of the application's state.
+ * @constant
+ * @type {Vuex.Store}
+*/
 export default new Vuex.Store({
+
+    /**
+     * Vuex Store modules help us separate and organize our global state.
+     * Based on context.
+     * @type {Object}
+     */
     modules: {
         app,
         files,

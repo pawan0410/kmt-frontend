@@ -2,14 +2,18 @@
 
 /**
  * Console log with context and pretty colors.
- * @function
- * @name prettyConsoleLog
- * @param {String} message Message to send to the console.
- * @param {String} context User provided, used to know where the log came from.
- * @param {Number} colorId To colors the context.
- * @returns {Boolean} return true if the log was posted, false if not.
+ * @function prettyConsoleLog
+ * @param    {String}  message Message to send to the console.
+ * @param    {String}  context User provided, used to know where the log came from.
+ * @param    {Number}  colorId To colors the context.
+ * @returns  {Boolean} return true if the log was posted, false if not.
  */
 function prettyConsoleLog( message, context, colorId ) {
+
+    /**
+     * We want to send the raw message to the console
+     * Usefule when debugging objects.
+     */
     if( context === -1 )
 
         /* eslint-disable no-console */
@@ -19,6 +23,7 @@ function prettyConsoleLog( message, context, colorId ) {
         color = colorId ? colors[ colorId ] : colors[ 0 ];
 
     /* eslint-disable no-console */
+    /* Apply pretty formatting. */
     console.log(
         "%c%s: %c%s", "color: " + color + ";font-weight: bold;",
         context || "GLOBAL",
