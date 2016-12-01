@@ -1,9 +1,10 @@
 <script>
-import auth from "../api/auth";
-
-import router    from "../routes";
+/* © AIG Business. See LICENSE file for full copyright & licensing details. */
 
 import { mapGetters } from "vuex";
+
+import auth   from "../api/auth";
+import C      from "../helpers";
 
 export default {
     data: () => {
@@ -29,30 +30,43 @@ export default {
     },
     methods: {
         authenticate( email, password ) {
+            if( this.working )
+                return;
+
+            C( "Authenticating..." );
+
             let store = this.$store;
 
             /* Turn on the loader and reset the login error message. */
             this.working = true;
             this.loginErrorMessage = "";
 
-            localStorage.setItem( "lastEmail", email );
+            if( email )
+                localStorage.setItem( "lastEmail", email );
 
             auth.authenticate(
                 { email, password },
-                ( token ) => {
+                ( data ) => {
 
                     /* Show the success icon. */
                     this.loginSuccess = true;
 
-                    /* Save the authentication token to the App state. */
-                    store.commit( "UPDATE_AUTH_TOKEN", token );
+                    /**
+                     * Save the authentication token to the App state and
+                     * redirect to the file manager.
+                     */
+                    store.dispatch( "authenticationDone", {
+                        token: data.token,
+                        routeName: "files"
+                    });
 
                     /* Redirect to the File Manager after 2 seconds. */
                     setTimeout( () => {
-                        router.replace( "files" );
+                        // router.replace( "files" );
                     }, 2000 );
                 },
                 ( data ) => {
+                    C( "Authentication failed!", false, 1 );
 
                     /* Disable the loader and display returned errors. */
                     this.working = false;
