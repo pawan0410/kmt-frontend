@@ -1,6 +1,10 @@
 <script>
 /* © AIG Business. See LICENSE file for full copyright & licensing details. */
 
+import { mapGetters } from "vuex";
+
+import C    from "../helpers";
+
 /**
  * Document manager Vue instance.
  * Displays the user's documents.
@@ -10,11 +14,37 @@
 export default {
 
     /**
+     * Computed properties.
+     * @type     {Object}
+     * @memberof DocumentsVue
+     */
+    computed: {
+        ...mapGetters({
+            companyName: "companyName",
+            copyrightYear: "copyrightYear",
+            documents: "documents",
+            user: "user",
+            jwt: "jwt"
+        })
+    },
+
+    /**
      * List of methods used within the view.
      * @type {Object}
      * @memberof DocumentsVue
      */
     methods: {
+
+        /**
+         * Open clicked document to be edited.
+         * @function openDocument
+         * @param   {Object} document The document that the user clicked.
+         * @returns {void}
+         */
+        openDocument( document ) {
+            C( "Clicked!" );
+            return document;
+        },
 
         /**
          * Sign the user out!
@@ -24,6 +54,16 @@ export default {
         signOut() {
             this.$store.dispatch( "signOut" );
         }
+    },
+
+    /**
+     * Hook that gets executed once the Vue object is created.
+     * @type {Function}
+     * @memberof DocumentsVue
+     * @returns {void}
+     */
+    created() {
+        this.$store.dispatch( "getDocuments", { token: this.jwt });
     }
 };
 </script>
@@ -35,18 +75,18 @@ export default {
 
             <div class="profile-picture"></div>
 
-            <h3 class="name">Irfan Khan</h3>
+            <h3 class="name">{{ user.name }}</h3>
 
-            <div class="overview"><span>6</span> Documents</div>
+            <div class="overview"><span>{{ documents.length }}</span> Documents</div>
 
             <ul class="menu">
-            <li><a href="manager.html">My Documents</a></li>
+            <li><a href="">My Documents</a></li>
             <li><a href="">Backoffice</a></li>
             </ul>
 
             <button class="sign-out" @click="signOut()"></button>
 
-            <footer>AIG Business © 2016</footer>
+            <footer>{{ companyName }} © {{ copyrightYear }}</footer>
         </aside>
 
         <section class="content">
@@ -60,34 +100,9 @@ export default {
             </header>
 
             <section class="documents">
-                <div class="document" id="processor">
-                    <h4>Web Developer Interview</h4>
-                    <p>28/08/2016</p>
-                </div>
-
-                <div class="document">
-                    <h4>New Supplier</h4>
-                    <p>28/09/2016</p>
-                </div>
-
-                <div class="document">
-                    <h4>Secretary Interview</h4>
-                    <p>25/08/2016</p>
-                </div>
-
-                <div class="document">
-                    <h4>Purchase Quote</h4>
-                    <p>28/09/2016</p>
-                </div>
-
-                <div class="document">
-                    <h4>Patient Checkup</h4>
-                    <p>20/08/2016</p>
-                </div>
-
-                <div class="document">
-                    <h4>Misc. Research</h4>
-                    <p>30/07/2016</p>
+                <div v-for="document in documents" class="document" :key="document.id" @click="openDocument(document)">
+                    <h4>{{ document.name }}</h4>
+                    <p>{{ document.update_time }}</p>
                 </div>
             </section>
         </section>

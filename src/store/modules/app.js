@@ -52,7 +52,8 @@ const getters = {
     companyName: ( state ) => state.companyName,
     copyrightYear: ( state ) => state.copyrightYear,
     jwt: ( state ) => state.jwt,
-    loading: ( state ) => state.loading
+    loading: ( state ) => state.loading,
+    user: ( state ) => state.user
 };
 
 /**
