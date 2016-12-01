@@ -36,7 +36,10 @@ const state = {
     /* Todo: Get this from the webservice. */
     companyName: "AIG Business",
 
-    copyrightYear: new Date().getFullYear()
+    copyrightYear: new Date().getFullYear(),
+
+    /* Are we loading something right now?*/
+    loading: true
 };
 
 /**
@@ -48,7 +51,8 @@ const state = {
 const getters = {
     companyName: ( state ) => state.companyName,
     copyrightYear: ( state ) => state.copyrightYear,
-    jwt: ( state ) => state.jwt
+    jwt: ( state ) => state.jwt,
+    loading: ( state ) => state.loading
 };
 
 /**
@@ -104,9 +108,13 @@ const actions = {
                 C( "Continuing to the requested route..." );
 
                 router.push( options.routeName );
+
+                commit( "DISABLE_LOADING" );
             },
             errorCallback: ( data ) => {
                 C( "Token is not valid. Redirecting to login page...", false, 1 );
+
+                commit( "DISABLE_LOADING" );
 
                 /* TODO: Show error */
 
@@ -152,6 +160,17 @@ const mutations = {
          */
         localStorage.setItem( "token", token );
     },
+
+    /**
+     * Update the loading state.
+     * @function DISABLE_LOADING
+     * @memberof AppStore.Mutations
+     * @param    {Object} state property of the Vuex store.
+     * @returns  {void}
+     */
+    DISABLE_LOADING( state ) {
+        state.loading = false;
+    }
 };
 
 /**

@@ -4,10 +4,12 @@ import "./assets/global.sass";
 
 import Vue            from "vue";
 import VueRouter      from "vue-router";
+import { mapGetters } from "vuex";
 
 import C      from "./helpers";
 import router from "./routes";
 import store  from "./store";
+
 
 /* Activate the routing system. */
 Vue.use( VueRouter );
@@ -20,8 +22,21 @@ C( "Starting application..." );
  * This is the starting point of the entire application.
  * @constant
  * @type {Vue}
+ * @namespace MainApp
 */
 const app = new Vue({
     store,
     router,
+
+    /**
+     * Computed properties.
+     * @type {Object}
+     * @memberof MainApp
+     */
+    computed: {
+        ...mapGetters({
+            loading: "loading",
+        })
+    },
+
 }).$mount( "#app" );

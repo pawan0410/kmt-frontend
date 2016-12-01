@@ -9,6 +9,9 @@
     <body>
         <div id="app">
             <router-view></router-view>
+            <div class="global-loader" v-show="loading">
+                <div></div><div></div><div></div>
+            </div>
         </div>
     </body>
 </html>
