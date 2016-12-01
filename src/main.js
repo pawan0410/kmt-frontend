@@ -6,24 +6,18 @@ import Vue            from "vue";
 import VueRouter      from "vue-router";
 import { mapGetters } from "vuex";
 
-import router    from "./routes";
-import store     from "./store";
+import C      from "./helpers";
+import router from "./routes";
+import store  from "./store";
 
 Vue.use( VueRouter );
+
+C( "Starting application..." );
 
 /* eslint-disable no-unused-vars */
 const app = new Vue({
     store,
     router,
-    created() {
-        let token = localStorage.getItem( "token" );
-
-        /* eslint-disable */
-        if( token )
-            this.$store.commit( "UPDATE_AUTH_TOKEN", token );
-        else
-            router.push( "login" );
-    },
     computed: {
         ...mapGetters({
             jwt: "jwt"
