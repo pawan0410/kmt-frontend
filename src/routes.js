@@ -2,7 +2,7 @@
 
 import VueRouter      from "vue-router";
 
-import Files from "./components/Files";
+import Documents from "./components/Documents";
 import Login from "./components/Login";
 import C     from "./helpers";
 import store from "./store";
@@ -23,9 +23,10 @@ function checkAuthentication( to, from, next ) {
     let token = localStorage.getItem( "token" );
 
     /* User is currently authenticated, carry on. */
-    if( store.state.app.authenticated )
+    if( store.state.app.authenticated ) {
         next();
-    else if( token ) {
+        store.dispatch( "loadingDone" );
+    } else if( token ) {
 
         /* We've found a stored token, we need to validate it. */
         C( "Previous JWT Token found." );
@@ -34,6 +35,8 @@ function checkAuthentication( to, from, next ) {
     } else {
         C( "No Token Found. Redirecting to the login page..." );
         router.push( "login" );
+
+        store.dispatch( "loadingDone" );
     }
 }
 
@@ -44,8 +47,8 @@ function checkAuthentication( to, from, next ) {
 */
 const routes = [
     { name: "login", path: "/login", component: Login },
-    { name: "files", path: "/files", component: Files, beforeEnter: checkAuthentication },
-    { path: "*", redirect: { name: "files" } }
+    { name: "documents", path: "/documents", component: Documents, beforeEnter: checkAuthentication },
+    { path: "*", redirect: { name: "documents" } }
 ];
 
 /**

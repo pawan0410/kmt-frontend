@@ -91,17 +91,12 @@ export default {
 
                     /**
                      * Save the authentication token to the App state and
-                     * redirect to the file manager.
+                     * redirect to the documents manager.
                      */
                     store.dispatch( "authenticationDone", {
                         token: data.token,
-                        routeName: "files"
+                        routeName: "documents"
                     });
-
-                    /* Redirect to the File Manager after 2 seconds. */
-                    setTimeout( () => {
-                        // router.replace( "files" );
-                    }, 2000 );
                 },
 
                 /* Failure callback. */

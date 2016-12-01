@@ -3,8 +3,8 @@
 /* TODO: build this. */
 
 const state = {
-    fileName: "",
-    fileId: null,
+    documentName: "",
+    documentId: null,
     delta: null
 };
 

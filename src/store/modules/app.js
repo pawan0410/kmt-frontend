@@ -27,8 +27,8 @@ const state = {
     jwt: "",
 
     /* TODO: Comment this. */
-    files: [],
-    currentFile: {
+    documents: [],
+    currentDocument: {
         name: "",
         delta: null,
     },
@@ -123,6 +123,31 @@ const actions = {
                 return data;
             }
         });
+    },
+
+    /**
+     * To stop application loading mode.
+     * to the login page.
+     * @function loadingDone
+     * @memberof AppStore.Actions
+     * @param    {Function} commit properties of the Vuex store.
+     * @returns  {void}
+     */
+    loadingDone({ commit }) {
+        commit( "DISABLE_LOADING" );
+    },
+
+    /**
+     * Destroy the local storage token and redirect the user
+     * to the login page.
+     * @function signOut
+     * @memberof AppStore.Actions
+     * @returns  {void}
+     */
+    signOut() {
+        localStorage.removeItem( "token" );
+
+        location.reload();
     }
 };
 

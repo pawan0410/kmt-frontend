@@ -1,7 +1,31 @@
 <script>
 /* © AIG Business. See LICENSE file for full copyright & licensing details. */
 
-export default {};
+/**
+ * Document manager Vue instance.
+ * Displays the user's documents.
+ * @type {Vue}
+ * @namespace DocumentsVue
+*/
+export default {
+
+    /**
+     * List of methods used within the view.
+     * @type {Object}
+     * @memberof DocumentsVue
+     */
+    methods: {
+
+        /**
+         * Sign the user out!
+         * @function signOut
+         * @returns {void}
+         */
+        signOut() {
+            this.$store.dispatch( "signOut" );
+        }
+    }
+};
 </script>
 
 <template>
@@ -20,7 +44,7 @@ export default {};
             <li><a href="">Backoffice</a></li>
             </ul>
 
-            <button class="sign-out"></button>
+            <button class="sign-out" @click="signOut()"></button>
 
             <footer>AIG Business © 2016</footer>
         </aside>
@@ -35,33 +59,33 @@ export default {};
                 <button class="search"></button>
             </header>
 
-            <section class="files">
-                <div class="file" id="processor">
+            <section class="documents">
+                <div class="document" id="processor">
                     <h4>Web Developer Interview</h4>
                     <p>28/08/2016</p>
                 </div>
 
-                <div class="file">
+                <div class="document">
                     <h4>New Supplier</h4>
                     <p>28/09/2016</p>
                 </div>
 
-                <div class="file">
+                <div class="document">
                     <h4>Secretary Interview</h4>
                     <p>25/08/2016</p>
                 </div>
 
-                <div class="file">
+                <div class="document">
                     <h4>Purchase Quote</h4>
                     <p>28/09/2016</p>
                 </div>
 
-                <div class="file">
+                <div class="document">
                     <h4>Patient Checkup</h4>
                     <p>20/08/2016</p>
                 </div>
 
-                <div class="file">
+                <div class="document">
                     <h4>Misc. Research</h4>
                     <p>30/07/2016</p>
                 </div>
@@ -217,17 +241,17 @@ $standard-padding: 20px
                 background: transparent url(../assets/images/search.svg) center center no-repeat
                 float: right
 
-        .files
+        .documents
             padding: $standard-padding 0px
             box-sizing: border-box
             display: flex
             flex-direction: row
             flex-wrap: wrap
-            .file
+            .document
                 width: 100px
                 padding: 5px
                 padding-top: 65px
-                background: transparent url(../assets/images/file.svg) center 5px no-repeat
+                background: transparent url(../assets/images/document.svg) center 5px no-repeat
                 margin-right: $standard-padding
                 border: 1px solid transparent
                 border-radius: 6px

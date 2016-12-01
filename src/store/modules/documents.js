@@ -3,7 +3,7 @@
 /* TODO: Build this. */
 
 const state = {
-    files: [],
+    documents: [],
 };
 
 const getters = {
