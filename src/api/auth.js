@@ -5,19 +5,35 @@ import configuration from "./configuration";
 
 const authEndpoint = configuration.apiEndpoint + "auth/";
 
-function authenticate( credentials, cb, errorCb ) {
+function authenticate( credentials, callback, errorCallback ) {
     $.ajax({
-        url: authEndpoint + "token",
+        url: authEndpoint,
         data: JSON.stringify( credentials ),
         type: "post",
         contentType: "application/json",
-    }).then( function( data ) {
-        cb( data.token );
-    }).fail( function( xhr ) {
-        errorCb( xhr.responseJSON );
+    })
+    .then( callback )
+    .fail( function( xhr ) {
+        errorCallback( xhr.responseJSON );
+    });
+}
+
+function validate( options ) {
+    $.ajax({
+        url: authEndpoint + "validate",
+        type: "post",
+        contentType: "application/json",
+        beforeSend: ( request ) => {
+            request.setRequestHeader( "Authorization", "Bearer " + options.token );
+        },
+    })
+    .then( options.callback )
+    .fail( function( xhr ) {
+        options.errorCallback( xhr.responseJSON );
     });
 }
 
 export default {
-    authenticate
+    authenticate,
+    validate
 };
