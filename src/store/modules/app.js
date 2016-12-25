@@ -127,6 +127,17 @@ const actions = {
     },
 
     /**
+     * Enable loading mode and show the loading screen.
+     * @function loading
+     * @memberof AppStore.Actions
+     * @param    {Function} commit properties of the Vuex store.
+     * @returns  {void}
+     */
+    loading({ commit }) {
+        commit( "ENABLE_LOADING" );
+    },
+
+    /**
      * To stop application loading mode.
      * to the login page.
      * @function loadingDone
@@ -185,6 +196,17 @@ const mutations = {
          * the session in case there was a refresh, this replaces cookies.
          */
         localStorage.setItem( "token", token );
+    },
+
+    /**
+     * Update the loading state.
+     * @function DISABLE_LOADING
+     * @memberof AppStore.Mutations
+     * @param    {Object} state property of the Vuex store.
+     * @returns  {void}
+     */
+    ENABLE_LOADING( state ) {
+        state.loading = true;
     },
 
     /**
