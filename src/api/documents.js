@@ -17,16 +17,123 @@ const endpoint = configuration.apiEndpoint + "documents/";
  * @memberof DocumentsAPI
  * @param    {Object}   options               List of parameters for this method.
  * @param    {String}   options.token         JWT token to validate.
- * @param    {Number} options.userId        Owner of the requested files.
  * @param    {Function} options.callback      Success callback.
  * @param    {Function} options.errorCallback Failure callback.
  * @returns  {void}
  */
 function get( options ) {
-    $.ajax({
-        url: endpoint + "get",
+    let searchEndPoint = endpoint + ( options.documentId || "" );
+
+    if( options.term  )
+        searchEndPoint = endpoint + "?term=" + options.term;
+
+    return $.ajax({
+        url: searchEndPoint,
+        type: "get",
+        contentType: "application/json",
+        beforeSend: ( request ) => {
+
+            /* We send the token through the Authorization HTTP header. */
+            request.setRequestHeader( "Authorization", "Bearer " + options.token );
+        },
+    })
+    .then( options.callback )
+    .fail( function( xhr ) {
+        options.errorCallback( xhr.responseJSON );
+    });
+}
+
+
+/**
+ * REST call to update a document's.
+ * @function put
+ * @memberof DocumentsAPI
+ * @param    {Object}   options               List of parameters for this method.
+ * @param    {String}   options.token         JWT token to validate.
+ * @param    {Array}    options.fields        List of fields and their values to be updated.
+
+ * @param    {Function} options.callback      Success callback.
+ * @param    {Function} options.errorCallback Failure callback.
+ * @returns  {void}
+ */
+function put( options ) {
+    let documentId = options.documentId || "",
+        data = {
+            fields: options.fields
+        };
+
+    return $.ajax({
+        url: endpoint + documentId,
+        type: "put",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify( data ),
+        beforeSend: ( request ) => {
+
+            /* We send the token through the Authorization HTTP header. */
+            request.setRequestHeader( "Authorization", "Bearer " + options.token );
+        },
+    })
+    .then( options.callback )
+    .fail( function( xhr ) {
+        options.errorCallback( xhr.responseJSON );
+    });
+}
+
+/**
+ * REST call to create a new document.
+ * @function post
+ * @memberof DocumentsAPI
+ * @param    {Object}   options               List of parameters for this method.
+ * @param    {String}   options.token         JWT token to validate.
+ * @param    {String}   options.name          Name of the new document.
+ * @param    {Function} options.callback      Success callback.
+ * @param    {Function} options.errorCallback Failure callback.
+ * @returns  {void}
+ */
+function post( options ) {
+    let documentId = options.documentId || "",
+        data = {
+            name: options.name
+        };
+
+    return $.ajax({
+        url: endpoint + documentId,
         type: "post",
         contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify( data ),
+        beforeSend: ( request ) => {
+
+            /* We send the token through the Authorization HTTP header. */
+            request.setRequestHeader( "Authorization", "Bearer " + options.token );
+        },
+    })
+    .then( options.callback )
+    .fail( function( xhr ) {
+        options.errorCallback( xhr.responseJSON );
+    });
+}
+
+/**
+ * REST call to delete a document.
+ * @function delete
+ * @memberof DocumentsAPI
+ * @param    {Object}   options               List of parameters for this method.
+ * @param    {String}   options.token         JWT token to validate.
+ * @param    {String}   options.id            ID of the document to be deleted.
+ * @param    {Function} options.callback      Success callback.
+ * @param    {Function} options.errorCallback Failure callback.
+ * @returns  {void}
+ */
+function remove( options ) {
+    let documentId = options.documentId || "";
+
+    return $.ajax({
+        url: endpoint + documentId,
+        type: "delete",
+        contentType: "application/json",
+        dataType: "json",
         beforeSend: ( request ) => {
 
             /* We send the token through the Authorization HTTP header. */
@@ -43,5 +150,8 @@ function get( options ) {
  * @namespace DocumentsAPI
  */
 export default {
-    get
+    get,
+    put,
+    post,
+    remove
 };

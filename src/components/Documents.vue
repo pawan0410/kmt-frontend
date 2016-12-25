@@ -3,7 +3,9 @@
 
 import { mapGetters } from "vuex";
 
-import C    from "../helpers";
+import SmallModal from "./sub/SmallModal";
+
+import C from "../helpers";
 
 /**
  * Document manager Vue instance.
@@ -12,6 +14,39 @@ import C    from "../helpers";
  * @namespace DocumentsVue
 */
 export default {
+
+    /**
+     * Local state generator.
+     * @function data
+     * @memberof DocumentsVue
+     * @returns {Object} List of local state default values.
+     */
+    data() {
+        return {
+
+            /* When we click on a document, it gets selected here. */
+            selectedDocument: null,
+
+            /* Flag to toggle document delete confirmation popup. */
+            showDocumentDeletionForm: false,
+
+            /* Flag to toggle search box. */
+            showSearchBox: false,
+
+            /* Search term provided by the user in the search box. */
+            searchTerm: "",
+
+            /* Flag mto toggle document create form. */
+            showDocumentCreationForm: false,
+
+            /* Contains document name provided by the user when creating a new one. */
+            newDocumentName: ""
+        };
+    },
+
+    components: {
+        SmallModal
+    },
 
     /**
      * Computed properties.
@@ -36,23 +71,82 @@ export default {
     methods: {
 
         /**
-         * Open clicked document to be edited.
-         * @function openDocument
-         * @param   {Object} document The document that the user clicked.
-         * @returns {void}
-         */
-        openDocument( document ) {
-            C( "Clicked!" );
-            return document;
-        },
-
-        /**
          * Sign the user out!
          * @function signOut
          * @returns {void}
          */
         signOut() {
             this.$store.dispatch( "signOut" );
+        },
+
+        // TODO: comment. named thusly to avoid being confused with global document.
+        selectDocument( theDocument ) {
+            this.selectedDocument = theDocument;
+        },
+
+        // TODO: comment.
+        openDocument( documentId ) {
+            this.$router.push({
+                name: "edit-document",
+                params: { id: documentId }
+            });
+        },
+
+        // TODO: comment.
+        requestDocumentDeletion() {
+            if( !this.selectedDocument )
+                return;
+
+            this.showDocumentDeletionForm = true;
+        },
+
+        // TODO: comment.
+        doSearchBox() {
+            this.showSearchBox = !this.showSearchBox;
+
+            if( this.showSearchBox )
+                this.$refs.searchBox.focus();
+            else /* Search the search field. */
+                this.searchTerm = "";
+        },
+
+        // TODO: comment
+        doSearchDocuments() {
+            C( this.searchTerm );
+            this.$store.dispatch( "searchDocuments", {
+                token: this.jwt,
+                term: this.searchTerm
+            });
+        },
+
+        // TODO: comment.
+        doCreateDocument() {
+            this.$store.dispatch( "createDocument", {
+                token: this.jwt,
+                name: this.newDocumentName
+            }).then( () => {
+                this.showDocumentCreationForm = false;
+            });
+        },
+
+        // TODO: comment
+        documentCreationForm() {
+            this.showDocumentCreationForm = true;
+
+            this.newDocumentName = "";
+        },
+
+        // TODO: Comment
+        doDeleteDocument() {
+            let store = this.$store;
+
+            store.dispatch( "deleteDocument", {
+                token: this.jwt,
+                id: this.selectedDocument.id,
+                index: this.documents.indexOf( this.selectedDocument )
+            }).then( () => {
+                this.showDocumentDeletionForm = false;
+            });
         }
     },
 
@@ -69,19 +163,16 @@ export default {
 </script>
 
 <template>
-    <div class="manager">
+    <div class="documents-manager">
         <aside>
-            <button class="menu-toggle"></button>
-
             <div class="profile-picture"></div>
 
             <h3 class="name">{{ user.name }}</h3>
 
             <div class="overview"><span>{{ documents.length }}</span> Documents</div>
 
-            <ul class="menu">
-            <li><a href="">My Documents</a></li>
-            <li><a href="">Backoffice</a></li>
+            <ul class="menu">               
+                <li><a href="">Backoffice</a></li>
             </ul>
 
             <button class="sign-out" @click="signOut()"></button>
@@ -91,36 +182,67 @@ export default {
 
         <section class="content">
             <header>
-                <button class="add"></button>
-                <button class="delete"></button>
+                <button class="add" @click="documentCreationForm()"></button>
+                <button class="delete" @click="requestDocumentDeletion()" v-show="selectedDocument"></button>
 
                 <h2 class="title">My Documents</h2>
 
-                <button class="search"></button>
+                <input type="text"
+                       class="search-field"
+                       v-model="searchTerm"
+                       v-bind:class="{ active: showSearchBox }"
+                       ref="searchBox"
+                       @keyup.enter="doSearchDocuments()">
+                <button class="search" v-bind:class="{ active: showSearchBox }" @click="doSearchBox()"></button>
             </header>
 
             <section class="documents">
-                <div v-for="document in documents" class="document" :key="document.id" @click="openDocument(document)">
+                <div v-for="document in documents"
+                     class="document"
+                     v-on:click="selectDocument( document )"
+                     v-on:dblclick="openDocument( document.id )"
+                     v-bind:class="{ selected: selectedDocument == document }">
                     <h4>{{ document.name }}</h4>
                     <p>{{ document.update_time }}</p>
                 </div>
             </section>
+
+            <!-- Form: Create a new document -->
+            <small-modal title="Create a New Document"
+                         v-if="showDocumentCreationForm"
+                         @close="showDocumentCreationForm = false">
+                <input type="text"
+                       autocomplete="off"
+                       name="name"
+                       placeholder="Pick a name..."
+                       v-model="newDocumentName"
+                       @keyup.enter="doCreateDocument()" />
+
+                <button type="submit" @click="doCreateDocument()">Create Document</button>
+            </small-modal>
+
+            <!-- Form: Delete document -->
+            <small-modal title="Delete Document"
+                         v-if="showDocumentDeletionForm"
+                         @close="showDocumentDeletionForm = false">
+                
+                <p>Are you sure you want to delete this document?</p>
+
+                <button type="submit" @click="doDeleteDocument()">Delete</button>
+            </small-modal>
         </section>
     </div>
 </template>
 
 <style lang="sass">
-$blue-color: #00b4ff
+@import "../assets/global.sass"
+
 $light-grey-color: #eeeeee
-$grey-border-color: #c6c6c6
 $grey-text-color: #898989
 $dark-grey-text-color: #555555
-$grey-button-border-color: #d0d0d0
 $light-border-color: #eeeeee
 
-$standard-padding: 20px
-
-.manager
+.documents-manager
     display: flex
     flex-direction: row
     height: 100%
@@ -134,18 +256,6 @@ $standard-padding: 20px
         position: relative
         overflow-x: hidden
         flex-shrink: 0
-        .menu-toggle
-            background: url(../assets/images/menu.svg) top left no-repeat
-            width: 20px
-            height: 18px
-            border: 0
-            top: $standard-padding + 8px
-            right: -2px
-            display: block
-            position: absolute
-            cursor: pointer
-            &:hover
-                background-image: url(../assets/images/menu-focus.svg)
         .profile-picture
             width: 70px
             height: 70px
@@ -221,6 +331,7 @@ $standard-padding: 20px
         min-width: 450px
         background: white url(../assets/images/color-logo.svg) right bottom no-repeat
         background-position: right $standard-padding bottom $standard-padding
+        position: relative
         header
             border-bottom: 1px solid $light-border-color
             padding-bottom: $standard-padding
@@ -237,24 +348,51 @@ $standard-padding: 20px
                 border-radius: 6px
                 float: left
                 margin-right: $standard-padding
+                &:hover
+                    cursor: pointer
             .delete
                 width: 20px
                 height: 34px
                 border: 0
                 background: transparent url(../assets/images/delete.svg) center center no-repeat
                 float: left
+                &:hover
+                    cursor: pointer
 
             .title
                 float: right
                 font-size: 20px
                 color: $dark-grey-text-color
                 margin-left: $standard-padding
+                line-height: 38px
             .search
                 width: 23px
-                height: 34px
+                height: 36px
                 border: 0
-                background: transparent url(../assets/images/search.svg) center center no-repeat
+                // background: transparent url() center center no-repeat
+                // background-color: red;
+                mask: url(../assets/images/search.svg) center center no-repeat
                 float: right
+                position: relative
+                z-index: 100
+                &:hover, &.active
+                    cursor: pointer
+                    background-color: $blue-color
+
+            .search-field
+                display: block
+                float: right
+                border-radius: 100px
+                height: 34px
+                width: 0px
+                
+                padding: 0px 0px 0px 36px
+                margin-left: -30px
+                transition: width 600ms ease
+                border: 1px solid white
+                &.active
+                    border: 1px solid #00b4ff
+                    width: 200px
 
         .documents
             padding: $standard-padding 0px
@@ -273,6 +411,8 @@ $standard-padding: 20px
                 &:hover
                     border: 1px dashed $grey-button-border-color
                     cursor: pointer
+                &.selected
+                    border: 1px dashed $blue-color
                 h4
                     text-align: center
                     font-size: 11px
@@ -283,5 +423,4 @@ $standard-padding: 20px
                     font-size: 9px
                     font-weight: bold
                     color: $grey-text-color
-
 </style>

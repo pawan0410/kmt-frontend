@@ -1,7 +1,8 @@
 /* © AIG Business. See LICENSE file for full copyright & licensing details. */
 
-import documents from "../../api/documents";
 import C         from "../../helpers";
+import documents from "../../api/documents";
+import router    from "../../routes";
 
 /* TODO: Build this. */
 
@@ -67,6 +68,90 @@ const actions = {
             }
         });
     },
+
+    // TODO: comment.
+    searchDocuments({ commit, state }, options ) {
+        C( "Searching documents named: " + options.term );
+
+        commit( "ENABLE_LOADING" );
+
+        documents.get({
+            token: options.token,
+            term: options.term,
+            callback: ( data ) => {
+                C( "Documents searched successfully!" );
+
+                commit( "UPDATE_DOCUMENTS", data.documents );
+
+                commit( "DISABLE_LOADING" );
+            },
+            errorCallback: ( data ) => {
+                // TODO: Error handling.
+                alert( "Error occurred!" );
+
+                commit( "DISABLE_LOADING" );
+
+                return data;
+            }
+        });
+    },
+
+    // TODO: comment.
+    createDocument({ commit, state }, options ) {
+        C( "Creating new document named: " + options.name );
+
+        commit( "ENABLE_LOADING" );
+
+        return documents.post({
+            token: options.token,
+            name: options.name,
+            callback: ( data ) => {
+                C( "Documents created successfully! ID: " + data.id );
+
+                commit( "DISABLE_LOADING" );
+
+                router.push({
+                    name: "edit-document",
+                    params: { id: data.id }
+                });
+            },
+            errorCallback: ( data ) => {
+                // TODO: Error handling.
+                alert( "Error occurred!" );
+
+                commit( "DISABLE_LOADING" );
+
+                return data;
+            }
+        });
+    },
+
+    // TODO: comment.
+    deleteDocument({ commit, state }, options ) {
+        C( "Deleting document ID: " + options.id );
+
+        commit( "ENABLE_LOADING" );
+
+        return documents.remove({
+            token: options.token,
+            documentId: options.id,
+            callback: () => {
+                C( "Documents deleted successfully! ID: " + options.id );
+
+                commit( "DISABLE_LOADING" );
+
+                commit( "DELETE_DOCUMENT", options.index );
+            },
+            errorCallback: ( data ) => {
+                // TODO: Error handling.
+                alert( "Error occurred!" );
+
+                commit( "DISABLE_LOADING" );
+
+                return data;
+            }
+        });
+    }
 };
 
 /**
@@ -79,7 +164,7 @@ const actions = {
 const mutations = {
 
     /**
-     * Update the loading state.
+     * Update the document list.
      * @function UPDATE_DOCUMENTS
      * @memberof Documents.Mutations
      * @param    {Object} state property of the Vuex store.
@@ -88,7 +173,19 @@ const mutations = {
      */
     UPDATE_DOCUMENTS( state, documents ) {
         state.documents = documents;
-    }
+    },
+
+    /**
+     * Delete a document by its array index.
+     * @function DELETE_DOCUMENT
+     * @memberof Documents.Mutations
+     * @param    {Object} state property of the Vuex store.
+     * @param    {Integer} documentIndex index in the documents array.
+     * @returns  {void}
+     */
+    DELETE_DOCUMENT( state, documentIndex ) {
+        state.documents.splice( documentIndex, 1 );
+    },
 };
 
 /**

@@ -1,3 +1,10 @@
+$dark-grey-color: #515151
+$blue-color: #00b4ff
+$grey-border-color: #c6c6c6
+$grey-button-border-color: #d0d0d0
+
+$standard-padding: 20px
+
 *
     margin: 0px
     padding: 0px
@@ -19,31 +26,97 @@ input, body, button
     66%
         transform: translateY( 100% )
 
-.global-loader
-    display: block
-    font-size: 0
-    color: #333
-    width: 54px
-    height: 18px
-    position: absolute
-    top: 50%
-    left: 50%
-    margin-left: -27px
-    margin-top: -9px
-    > div
-        display: inline-block
-        width: 10px
-        height: 10px
-        margin: 4px
-        border-radius: 100%
-        animation: bouncy .6s infinite ease-in-out
-        &:nth-child( 1 )
-            background-color: #0ee1e3
-            animation-delay: -.14s
-        &:nth-child( 2 )
-            background-color: #0bd6eb
-            animation-delay: -.07s
-        &:nth-child( 3 )
-            background-color: #00b4ff
-            animation-delay: 0s
+@keyframes bounceIn
+    from, 20%, 40%, 60%, 80%, to
+        animation-timing-function: cubic-bezier( 0.215, 0.610, 0.355, 1.000 )
 
+    0%
+        opacity: 0
+        transform: scale3d( .3, .3, .3 )
+
+    20%
+        transform: scale3d( 1.1, 1.1, 1.1 )
+
+    40%
+        transform: scale3d( .9, .9, .9 )
+
+    60%
+        opacity: 1
+        transform: scale3d( 1.03, 1.03, 1.03 )
+
+    80%
+        transform: scale3d( .97, .97, .97 )
+
+    to
+        opacity: 1
+        transform: scale3d(1, 1, 1)
+
+@keyframes bounceInLeft
+    from, 60%, 75%, 90%, to
+        animation-timing-function: cubic-bezier( 0.215, 0.610, 0.355, 1.000 )
+
+    0%
+        opacity: 0;
+        transform: translate3d( -3000px, 0, 0 )
+
+    60%
+        opacity: 1
+        transform: translate3d( 25px, 0, 0 )
+
+    75%
+        transform: translate3d( -10px, 0, 0 )
+
+    90%
+        transform: translate3d( 5px, 0, 0 )
+
+    to
+        transform: none
+
+.fade-leave-active
+    transition: opacity 1s
+
+.fade-enter, .fade-leave-active
+    opacity: 0
+
+.appear-enter-active, .appear-leave-active
+    transition: opacity .5s
+
+.appear-enter, .appear-leave-active
+    opacity: 0
+
+
+.global-loader
+    position: fixed
+    top: 0px
+    left: 0px
+    width: 100%
+    height: 100%
+    background-color: rgba( 255, 255, 255, 0.9 )
+    z-index: 5000
+    .dots
+        display: block
+        font-size: 0
+        color: #333
+        width: 54px
+        height: 18px
+        position: absolute
+        top: 50%
+        left: 50%
+        margin-left: -27px
+        margin-top: -9px
+        > div
+            display: inline-block
+            width: 10px
+            height: 10px
+            margin: 4px
+            border-radius: 100%
+            animation: bouncy .6s infinite ease-in-out
+            &:nth-child( 1 )
+                background-color: #0ee1e3
+                animation-delay: -.14s
+            &:nth-child( 2 )
+                background-color: #0bd6eb
+                animation-delay: -.07s
+            &:nth-child( 3 )
+                background-color: #00b4ff
+                animation-delay: 0s
