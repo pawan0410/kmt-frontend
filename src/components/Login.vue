@@ -114,7 +114,7 @@ export default {
 </script>
 
 <template>
-<div class="container">
+<div class="login-container">
     <section class="splash"></section>
 
     <section class="form">
@@ -179,7 +179,7 @@ input, body, button
     background: white
     animation: ripple-animation 1s forwards
 
-.container
+.login-container
     $login-container-width: 660px
     $login-container-height: 400px
     width: $login-container-width
