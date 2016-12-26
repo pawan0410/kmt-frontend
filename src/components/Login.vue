@@ -138,6 +138,8 @@ export default {
 </template>
 
 <style lang="sass">
+@import "../assets/global.sass"
+
 $blue-color: #00b4ff
 $grey-border-color: #ebebeb
 $standard-padding: 20px
@@ -215,7 +217,7 @@ input, body, button
             font-size: 12px
             font-weight: bold
             text-align: center
-            color: #f6465b
+            color: $red-color
             margin-top: 10px
         input
             display: block

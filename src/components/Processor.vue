@@ -12,7 +12,11 @@ import { mixin as clickaway } from "vue-clickaway";
 
 import keywords from "../api/keywords";
 
+import { IndentClass } from "../quill";
 import C from "../helpers";
+
+/* Register style indentations for export portability. */
+Quill.register( "formats/indent", IndentClass );
 
 /* Register smart keyword plugin. */
 Quill.register( "modules/keyboard", SmartKeyboard );
@@ -76,6 +80,9 @@ export default {
             /* Flag to toggle Add partial suggestions form. */
             addPartialSuggestions: false,
 
+            /* Flag to toggle Save as Smart keyword form. */
+            saveAsSmartKeyword: false,
+
             /* Flag to toggle document actions. */
             showActions: false,
 
@@ -107,14 +114,37 @@ export default {
             /* Flag to toggle sidebar. */
             showSideBar:  false,
 
+            /* Flag to know when we're getting a keyword, and when the async operation is done. */
             gettingKeyword: false,
 
+            /* List of keywords to suggest to the user. */
             keywordList: [],
 
-            partialSuggestionsList: []
+            /* List of options to use to create a partial suggestions list (HTML select element) */
+            partialSuggestionsList: [],
+
+            /* Name of the smart keyword to save the document as. */
+            savedSmartKeyword: "",
+
+            /* Flag to keep track of keyword saving form errors. */
+            saveSmartKeywordError: false
         };
     },
 
+
+    /**
+     * Watch some property changes.
+     * @type     {Object}
+     * @memberof ProcessorVue
+     */
+    watch: {
+        "savedSmartKeyword": function( value ) {
+            if( !value )
+                return;
+
+            this.saveSmartKeywordError = !keywords.format.test( value );
+        }
+    },
 
     /**
      * Called after the instance has just been mounted
@@ -133,6 +163,11 @@ export default {
         }).then( () => {
             this.initQuill();
 
+            let keyword = this.$route.params.keyword;
+
+            if( keyword )
+                this.insertKeyword( keyword );
+
             store.dispatch( "loadingDone" );
         });
 
@@ -146,6 +181,10 @@ export default {
     methods: {
         // TODO: comment
         initQuill() {
+
+            let AlignStyle = Quill.import( "attributors/style/align" );
+
+            Quill.register( "formats/align", AlignStyle );
 
             this.quill = new Quill( $( ".document", this.$el ).get( 0 ), {
                 theme: "snow",
@@ -244,31 +283,37 @@ export default {
                 quill.focus();
 
                 let selectElement = event.target,
-                    range = quill.getSelection(),
                     value = $( selectElement ).val();
 
-                /* Do nothing. */
-                if( !value )
-                    return;
+                this.insertKeyword( value );
+            });
+        },
 
-                /* Nothing is currently selected. */
-                if( !range )
-                    range = { index: 0 };
+        // TODO: comment
+        insertKeyword( value ) {
 
-                C( range, -1 );
+            /* Do nothing. */
+            if( !value )
+                return;
 
-                let delta = quill.insertText( range.index, value );
-
-                //  Set the cursor to the end of the inserted content.
-                quill.setSelection( delta.length() + range.length );
-
-                /* Simulate the smart keyword insertion mechanis, since it only gets fired if we manually type space. */
+            let quill = this.quill,
                 range = quill.getSelection();
 
-                quill.keyboard.smartKeyword( range, { prefix: value });
+            /* Nothing is currently selected. */
+            if( !range )
+                range = { index: 0 };
 
-                quill.selection.scrollIntoView();
-            });
+            let delta = quill.insertText( range.index, value );
+
+            //  Set the cursor to the end of the inserted content.
+            quill.setSelection( delta.length() + range.length );
+
+            /* Simulate the smart keyword insertion mechanis, since it only gets fired if we manually type space. */
+            range = quill.getSelection();
+
+            quill.keyboard.smartKeyword( range, { prefix: value });
+
+            quill.selection.scrollIntoView();
         },
 
         // TODO: comment
@@ -353,6 +398,20 @@ export default {
 
             Vue.nextTick( () => {
                 this.$refs.linkInput.focus();
+            });
+        },
+
+        toggleSaveAsSmartKeyword() {
+            this.saveAsSmartKeyword = !this.saveAsSmartKeyword;
+
+            if( !this.saveAsSmartKeyword ) {
+                this.savedSmartKeyword = "";
+
+                return;
+            }
+
+            Vue.nextTick( () => {
+                this.$refs.smartKeywordInput.focus();
             });
         },
 
@@ -489,8 +548,50 @@ export default {
 
             if( index !== -1 )
                 this.partialSuggestionsList.splice( index, 1 );
-        }
-    },
+        },
+
+        // TODO: comment.
+        doShowActions() {
+            this.showActions = !this.showActions;
+
+            if( this.showActions )
+                this.saveAsSmartKeyword = false;
+        },
+
+        // TODO: comment.
+        saveSmartKeyword() {
+            C( this.savedSmartKeyword  );
+
+            if( !keywords.format.test( this.savedSmartKeyword ) ) {
+                this.saveSmartKeywordError = true;
+                return;
+            }
+
+            this.saveSmartKeywordError = false;
+
+            let store = this.$store;
+
+            store.dispatch( "saveSmartKeyword", {
+                token: this.jwt,
+                smartKeyword: this.savedSmartKeyword,
+                delta: this.quill.getContents()
+            }).then( () => {
+                this.saveAsSmartKeyword = false;
+                this.savedSmartKeyword = "";
+            });
+        },
+
+        // TODO: comment.
+        export_() {
+            let store = this.$store;
+
+            store.dispatch( "exportDocument", {
+                token: this.jwt,
+                documentId: this.documentId,
+                content: this.quill.root.innerHTML
+            });
+        },
+    }
 };
 
 </script>
@@ -590,15 +691,34 @@ export default {
                 <button class="undo" @click="undo()"></button>
                 <button class="redo" @click="redo()"></button>
                 <button class="more"
-                        @click="showActions = !showActions"
+                        @click="doShowActions()"
                         v-on-clickaway="hideActions"></button>
                 
                 <ul class="options"
                     v-bind:class="{ show: showActions }">
                     <li class="save-document" @click="save()">Save</li>
-                    <li class="export-document">Export</li>
-                    <li class="save-template">Save as template</li>
+                    <li class="export-document" @click="export_()">Export</li>
+                    <li class="save-template"
+                        @click="toggleSaveAsSmartKeyword()">Save as template</li>
                 </ul>
+
+                <div class="save-as-smart-keyword"
+                     v-bind:class="{ show: saveAsSmartKeyword }">
+                    
+                    <h3>Save as a Smart Keyword</h3>
+
+                    <input type="text"
+                           name="smartKeyword"
+                           class="smart-keyword"
+                           placeholder="Smart Keyword..."
+                           v-model="savedSmartKeyword"
+                           v-bind:class="{ error: saveSmartKeywordError }"
+                           ref="smartKeywordInput" />
+
+                    <button class="save" @click="saveSmartKeyword()">Save</button>
+
+                    <button class="cancel" @click="toggleSaveAsSmartKeyword()">Cancel</button>
+                </div>
             </section>
         </div>
     </header>
@@ -1117,6 +1237,77 @@ $document-width: 816px
                         background-image: url(../assets/images/processor/actions/save-template.svg)
                         background-position: 5px center
 
+                &:before
+                    content: ""
+                    position: absolute
+                    width: 0
+                    height: 0
+                    margin-left: -0.5em
+                    top: 2px
+                    right: -2px
+                    box-sizing: border-box
+                    border: 6px solid black
+                    border-color: transparent transparent white white
+                    
+                    transform-origin: 0 0
+                    transform: rotate(135deg)
+                    
+                    box-shadow: -1px 1px 0px 0px rgba( 0, 0, 0, 0.1 )
+
+            .save-as-smart-keyword
+                display: none
+                position: absolute
+                top: 40px
+                right: 0px
+                width: 300px
+                padding: $standard-padding $standard-padding
+                background-color: white
+                box-shadow: 0px 2px 4.15px 0.85px rgba( 0, 0, 0, 0.2 )
+                list-style-type: none
+                font-size: 14px
+                font-weight: bold
+                color: $grey-text-color
+                z-index: 100
+                border-radius: 3px
+                text-align: center
+                line-height: 30px
+                h3
+                    color: black
+                    font-size: 14px
+                    margin-bottom: 10px
+                    line-height: 14px
+                input
+                    display: block
+                    width: 100%
+                    height: 34px
+                    font-size: 14px
+                    padding: 0px 2px
+                    border: 0
+                    border-bottom: 3px solid $grey-border-color
+                    box-sizing: border-box
+                    margin-bottom: 20px
+                    &.error
+                        border-color: $red-color
+
+                .save, .cancel
+                    display: block
+                    border: 2px solid $grey-button-border-color
+                    width: 90px
+                    height: 34px
+                    float: right
+                    
+                    border-radius: 4px
+                    &:hover
+                        cursor: pointer
+
+                .save
+                    background: transparent url(../assets/images/processor/link/confirm-button.svg) 6px center no-repeat
+                    padding-left: 20px
+                    float: left
+
+                &.show
+                    display: block
+                    animation: bounceIn 400ms
                 &:before
                     content: ""
                     position: absolute

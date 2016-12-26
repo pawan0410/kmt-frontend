@@ -36,16 +36,13 @@ export default {
     background-color: rgba( 0, 0, 0,0.5 )
     z-index: 100
     .form
-        $form-width: 300px
-        $form-height: 140px
         background-color: white
         position: absolute
         top: $standard-padding
         left: $standard-padding
         padding: $standard-padding
         border-radius: 4px
-        width: $form-width
-        height: $form-height
+        width: 300px
         p
             margin-bottom: 10px
         h3

@@ -105,6 +105,7 @@ const actions = {
         return documents.post({
             token: options.token,
             name: options.name,
+            keyword: options.keyword,
             callback: ( data ) => {
                 C( "Documents created successfully! ID: " + data.id );
 
@@ -112,7 +113,10 @@ const actions = {
 
                 router.push({
                     name: "edit-document",
-                    params: { id: data.id }
+                    params: {
+                        id: data.id,
+                        keyword: data.keyword
+                    }
                 });
             },
             errorCallback: ( data ) => {
@@ -141,6 +145,32 @@ const actions = {
                 commit( "DISABLE_LOADING" );
 
                 commit( "DELETE_DOCUMENT", options.index );
+            },
+            errorCallback: ( data ) => {
+                // TODO: Error handling.
+                alert( "Error occurred!" );
+
+                commit( "DISABLE_LOADING" );
+
+                return data;
+            }
+        });
+    },
+
+    // TODO: comment.
+    exportDocument({ commit, state }, options ) {
+        C( "Exporting document ID: " + options.id );
+
+        commit( "ENABLE_LOADING" );
+
+        return documents._export({
+            token: options.token,
+            documentId: options.documentId,
+            content: options.content,
+            callback: ( data ) => {
+                C( "Documents exported successfully! Google Drive ID: " + data.id );
+
+                commit( "DISABLE_LOADING" );
             },
             errorCallback: ( data ) => {
                 // TODO: Error handling.

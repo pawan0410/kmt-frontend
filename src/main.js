@@ -36,7 +36,26 @@ const app = new Vue({
     computed: {
         ...mapGetters({
             loading: "loading",
+            applicationError: "applicationError"
         })
     },
+
+    /**
+     * List of methods used within the view.
+     * @type {Object}
+     * @memberof MainApp
+     */
+    methods: {
+
+        /**
+         * Clear and hide error box.
+         * @function closeErrorBox
+         * @returns {void}
+         * @memberof MainApp
+         */
+        closeErrorBox() {
+            this.$store.dispatch( "applicationError" );
+        }
+    }
 
 }).$mount( "#app" );

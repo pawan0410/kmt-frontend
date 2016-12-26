@@ -48,8 +48,42 @@ function get( options ) {
 }
 
 /**
+ * REST call to create a new smart keyword.
+ * @function post
+ * @memberof KeywordsAPI
+ * @param    {Object}   options               List of parameters for this method.
+ * @param    {String}   options.token         JWT token to validate.
+ * @param    {String}   options.smartKeyword  Smart Keyword name to be saved.
+ * @param    {Function} options.callback      Success callback.
+ * @param    {Function} options.errorCallback Failure callback.
+ * @returns  {void}
+ */
+function post( options ) {
+    let postKeywordEndoint = endpoint;
+
+    return $.ajax({
+        url: postKeywordEndoint,
+        type: "post",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify( options.fields ),
+        beforeSend: ( request ) => {
+
+            /* We send the token through the Authorization HTTP header. */
+            request.setRequestHeader( "Authorization", "Bearer " + options.token );
+        },
+    })
+    .then( options.callback )
+    .fail( function( xhr ) {
+        options.errorCallback( xhr.responseJSON );
+    });
+}
+
+/**
  * @namespace KeywordsAPI
  */
 export default {
-    get
+    get,
+    post,
+    format: /^\.[a-zA-Z0-9_-]*$/
 };

@@ -94,7 +94,8 @@ function put( options ) {
 function post( options ) {
     let documentId = options.documentId || "",
         data = {
-            name: options.name
+            name: options.name,
+            keyword: options.keyword
         };
 
     return $.ajax({
@@ -147,11 +148,49 @@ function remove( options ) {
 }
 
 /**
+ * REST call to export a document to Google Drive.
+ * Note: named _export because export is a keyword.
+ * @function delete
+ * @memberof DocumentsAPI
+ * @param    {Object}   options               List of parameters for this method.
+ * @param    {String}   options.token         JWT token to validate.
+ * @param    {String}   options.id            ID of the document to be deleted.
+ * @param    {String}   options.content       HTML content of the document.
+ * @param    {Function} options.callback      Success callback.
+ * @param    {Function} options.errorCallback Failure callback.
+ * @returns  {void}
+ */
+function _export( options ) {
+    let documentId = options.documentId || "",
+        data = {
+            content: options.content
+        };
+
+    return $.ajax({
+        url: endpoint + "export/" + documentId,
+        type: "post",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify( data ),
+        beforeSend: ( request ) => {
+
+            /* We send the token through the Authorization HTTP header. */
+            request.setRequestHeader( "Authorization", "Bearer " + options.token );
+        },
+    })
+    .then( options.callback )
+    .fail( function( xhr ) {
+        options.errorCallback( xhr.responseJSON );
+    });
+}
+
+/**
  * @namespace DocumentsAPI
  */
 export default {
     get,
     put,
     post,
-    remove
+    remove,
+    _export
 };

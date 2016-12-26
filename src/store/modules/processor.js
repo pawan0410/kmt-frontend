@@ -1,7 +1,8 @@
 /* © AIG Business. See LICENSE file for full copyright & licensing details. */
 
-import documents from "../../api/documents";
 import C         from "../../helpers";
+import documents from "../../api/documents";
+import keywords  from "../../api/keywords";
 
 /**
  * Document Processor global state.
@@ -106,6 +107,43 @@ const actions = {
                 alert( "Error occurred!" );
 
                 commit( "DISABLE_LOADING" );
+
+                return data;
+            }
+        });
+    },
+
+    /**
+     * Save the a delta as a smart keyword.
+     * @function saveSmartKeyword
+     * @memberof Documents.Actions
+     * @param    {Object} commit/state properties of the Vuex store.
+     * @param    {Object} options List of options.
+     * @param    {String} options.token name     JWT token of the currently authenticated user.
+     * @param    {String} options.smartKeyword   name of the smart keyword.
+     * @param    {String} options.delta Document delta to save.
+     * @returns  {void}
+     */
+    saveSmartKeyword({ commit, state }, options ) {
+        C( "Saving smart keyword... : " + options.smartKeyword );
+
+        commit( "ENABLE_LOADING" );
+
+        return keywords.post({
+            token: options.token,
+            fields: {
+                name: options.smartKeyword,
+                delta: JSON.stringify( options.delta )
+            },
+            callback: () => {
+                C( "Document saved successfully!" );
+
+                commit( "DISABLE_LOADING" );
+            },
+            errorCallback: ( data ) => {
+                commit( "DISABLE_LOADING" );
+
+                commit( "SHOW_APPLICATION_ERROR", data ? data.error : false );
 
                 return data;
             }

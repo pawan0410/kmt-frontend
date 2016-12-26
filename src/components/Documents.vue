@@ -40,7 +40,10 @@ export default {
             showDocumentCreationForm: false,
 
             /* Contains document name provided by the user when creating a new one. */
-            newDocumentName: ""
+            newDocumentName: "",
+
+            /* Contains keyword name to be used in creating a new document. */
+            newDocumentKeyword: ""
         };
     },
 
@@ -123,7 +126,8 @@ export default {
         doCreateDocument() {
             this.$store.dispatch( "createDocument", {
                 token: this.jwt,
-                name: this.newDocumentName
+                name: this.newDocumentName,
+                keyword: this.newDocumentKeyword
             }).then( () => {
                 this.showDocumentCreationForm = false;
             });
@@ -216,6 +220,13 @@ export default {
                        name="name"
                        placeholder="Pick a name..."
                        v-model="newDocumentName"
+                       @keyup.enter="doCreateDocument()" />
+
+                <input type="text"
+                       autocomplete="off"
+                       name="keyword"
+                       placeholder="Smart Keyword..."
+                       v-model="newDocumentKeyword"
                        @keyup.enter="doCreateDocument()" />
 
                 <button type="submit" @click="doCreateDocument()">Create Document</button>

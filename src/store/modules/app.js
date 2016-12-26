@@ -39,7 +39,9 @@ const state = {
     copyrightYear: new Date().getFullYear(),
 
     /* Are we loading something right now?*/
-    loading: true
+    loading: true,
+
+    applicationError: false
 };
 
 /**
@@ -53,7 +55,8 @@ const getters = {
     copyrightYear: ( state ) => state.copyrightYear,
     jwt: ( state ) => state.jwt,
     loading: ( state ) => state.loading,
-    user: ( state ) => state.user
+    user: ( state ) => state.user,
+    applicationError: ( state ) => state.applicationError
 };
 
 /**
@@ -160,6 +163,18 @@ const actions = {
         localStorage.removeItem( "token" );
 
         location.reload();
+    },
+
+    /**
+     * Update application error message state.
+     * @function applicationError
+     * @memberof AppStore.Actions
+     *
+     * @param    {String} error Error message.
+     * @returns  {void}
+     */
+    applicationError({ commit }, error ) {
+        commit( "SHOW_APPLICATION_ERROR", error );
     }
 };
 
@@ -218,6 +233,18 @@ const mutations = {
      */
     DISABLE_LOADING( state ) {
         state.loading = false;
+    },
+
+    /**
+     * Update the application error state.
+     * @function SHOW_APPLICATION_ERROR
+     * @memberof AppStore.Mutations
+     * @param    {Object} state property of the Vuex store.
+     * @param    {String} error Error to display.
+     * @returns  {void}
+     */
+    SHOW_APPLICATION_ERROR( state, error ) {
+        state.applicationError = error || false;
     }
 };
 
