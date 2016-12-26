@@ -451,6 +451,8 @@ export default {
 
             quill.setSelection( range.index + 1, Quill.sources.SILENT );
 
+            this.partialSuggestionsList = [];
+
             this.addPartialSuggestions = false;
         },
 
@@ -513,7 +515,7 @@ export default {
                 <button class="color"
                         @click="colorPicker = !colorPicker"></button>
                 
-                <button class="block"
+                <button class="select"
                         @click="addPartialSuggestions = !addPartialSuggestions"></button>
 
                 <div class="choose-link"
@@ -791,6 +793,8 @@ $document-width: 816px
                 background-image: url(../assets/images/processor/image.svg)
             .color
                 background-image: url(../assets/images/processor/color.svg)
+            .select
+                background-image: url(../assets/images/processor/select.svg)
 
             .choose-link
                 display: none
