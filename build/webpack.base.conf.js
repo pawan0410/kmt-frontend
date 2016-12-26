@@ -55,7 +55,8 @@ module.exports = {
         loader: 'babel-loader', 
         include: [
           projectRoot,
-          path.resolve( __dirname, '../node_modules', 'quill_smart_keyword' )
+          path.resolve( __dirname, '../node_modules', 'quill_smart_keyword' ),
+          path.resolve( __dirname, '../node_modules', 'quill-select' )
         ],
         // Need this here for prosemirror til it has own .babelrc
         query: {

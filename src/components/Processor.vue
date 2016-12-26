@@ -4,6 +4,7 @@
 import $             from "jquery";
 import Quill         from "quill";
 import SmartKeyboard from "quill_smart_keyword";
+import Select        from "quill-select";
 
 import Vue                    from "vue";
 import { mapGetters }         from "vuex";
@@ -13,8 +14,11 @@ import keywords from "../api/keywords";
 
 import C from "../helpers";
 
+/* Register smart keyword plugin. */
 Quill.register( "modules/keyboard", SmartKeyboard );
 
+/* Register select blot, in order to implement the partial suggestions engine. */
+Quill.register( "formats/select", Select );
 
 /**
  * Document procesSor Vue instance.
@@ -69,6 +73,9 @@ export default {
             /* Flag to toggle color picker*/
             colorPicker: false,
 
+            /* Flag to toggle Add partial suggestions form. */
+            addPartialSuggestions: false,
+
             /* Flag to toggle document actions. */
             showActions: false,
 
@@ -102,7 +109,9 @@ export default {
 
             gettingKeyword: false,
 
-            keywordList: []
+            keywordList: [],
+
+            partialSuggestionsList: []
         };
     },
 
@@ -215,6 +224,9 @@ export default {
 
             quill.updateContents( this.delta );
 
+
+            this.setupPartialSuggestionsEngine();
+
             /**
              * This is necessary so that the use is not able to undo the Delta
              * update we just did in the previous line.
@@ -222,6 +234,41 @@ export default {
             quill.history.clear();
 
             quill.focus();
+        },
+
+        // TODO: comment.
+        setupPartialSuggestionsEngine() {
+            let quill = this.quill;
+
+            $( quill.root ).on( "change", "select", ( event ) => {
+                quill.focus();
+
+                let selectElement = event.target,
+                    range = quill.getSelection(),
+                    value = $( selectElement ).val();
+
+                /* Do nothing. */
+                if( !value )
+                    return;
+
+                /* Nothing is currently selected. */
+                if( !range )
+                    range = { index: 0 };
+
+                C( range, -1 );
+
+                let delta = quill.insertText( range.index, value );
+
+                //  Set the cursor to the end of the inserted content.
+                quill.setSelection( delta.length() + range.length );
+
+                /* Simulate the smart keyword insertion mechanis, since it only gets fired if we manually type space. */
+                range = quill.getSelection();
+
+                quill.keyboard.smartKeyword( range, { prefix: value });
+
+                quill.selection.scrollIntoView();
+            });
         },
 
         // TODO: comment
@@ -382,6 +429,37 @@ export default {
             C( event, -1 );
 
             event.preventDefault();
+        },
+
+        // TODO: comment
+        insertPartialSuggestions() {
+            let quill = this.quill,
+                range = quill.getSelection();
+
+            if( this.partialSuggestionsList.length < 1 ) {
+                alert( "Please add some values" );
+
+                return;
+            }
+
+            if( !range ) {
+                quill.setSelection( 0 );
+                range = quill.getSelection();
+            }
+
+            quill.insertEmbed( range.index, "select", this.partialSuggestionsList );
+
+            quill.setSelection( range.index + 1, Quill.sources.SILENT );
+
+            this.addPartialSuggestions = false;
+        },
+
+        // TODO: comment.
+        removePartialSuggestion( suggestion ) {
+            let index = this.partialSuggestionsList.indexOf( suggestion );
+
+            if( index !== -1 )
+                this.partialSuggestionsList.splice( index, 1 );
         }
     },
 };
@@ -433,10 +511,10 @@ export default {
                         v-on-clickaway="hideAddImage"></button>
                 
                 <button class="color"
-                        @click="colorPicker = !colorPicker"
-                        v-on-clickaway="hideColorPicker"></button>
+                        @click="colorPicker = !colorPicker"></button>
                 
-                <button class="block"></button>
+                <button class="block"
+                        @click="addPartialSuggestions = !addPartialSuggestions"></button>
 
                 <div class="choose-link"
                      v-bind:class="{ show: addLink }">
@@ -458,6 +536,23 @@ export default {
                             v-bind:style="{ backgroundColor: color }"
                             @click="setColor(color)">
                     </button>
+                </div>
+
+                <div class="add-partial-suggestions"
+                     v-bind:class="{ show: addPartialSuggestions }">
+                    
+                    <div v-for="suggestion in partialSuggestionsList"
+                         class="suggestion">
+                        
+                        <input type="text" name="title" class="title" placeholder="Title" v-model="suggestion.title" />
+                        <input type="text" name="keyword" class="keyword" placeholder="Smart Keyword" v-model="suggestion.value" />
+                        <button v-on:click="removePartialSuggestion( suggestion )">X</button>
+                    </div>
+
+
+                    <button class="insert-suggestion" @click="partialSuggestionsList.push({})"></button>
+
+                    <button class="confirm" @click="insertPartialSuggestions()">Confirm</button>
                 </div>
             </section>
 
@@ -841,6 +936,96 @@ $document-width: 816px
                     &:nth-child( n+9 )
                         margin-bottom: 0
 
+            .add-partial-suggestions
+                display: none
+                position: absolute
+                top: 40px
+                right: 0px
+                width: 300px
+                padding: $standard-padding $standard-padding
+                background-color: white
+                box-shadow: 0px 2px 4.15px 0.85px rgba( 0, 0, 0, 0.2 )
+                list-style-type: none
+                font-size: 14px
+                font-weight: bold
+                color: $grey-text-color
+                z-index: 100
+                border-radius: 3px
+                text-align: center
+                line-height: 30px
+                .suggestion
+                    overflow: auto
+                    margin-bottom: 20px
+                    &:after
+                        display: block
+                        content: " "
+                        clear: both
+                    button
+                        width: 30px
+                        height: 30px
+                        line-height: 30px
+                        margin: 0px
+                        font-weight: bold
+                    input
+                        display: block
+                        float: left
+                        width: 150px
+                        height: 30px
+                        padding: 0px 2px
+                        border: 0
+                        border-bottom: 3px solid $grey-border-color
+                        margin-right: 6px
+                        &.keyword
+                            width: 100px
+
+                .insert-suggestion
+                    float: left
+                    display: block
+                    border: 0
+                    width: 20px
+                    height: 20px
+                    background: #00b4ff url(../assets/images/add.svg) center center no-repeat
+                    display: block
+                    width: 80px
+                    height: 34px
+                    border-radius: 3px
+                    &:hover
+                        cursor: pointer
+
+                .confirm
+                    display: block
+                    border: 2px solid $grey-button-border-color
+                    width: 90px
+                    height: 34px
+                    background: transparent url(../assets/images/processor/link/confirm-button.svg) 6px center no-repeat
+                    float: right
+                    margin-left: 10px
+                    margin-right: 0px
+                    padding-left: 20px
+                    border-radius: 4px
+                    &:hover
+                        cursor: pointer
+
+                &.show
+                    display: block
+                    animation: bounceIn 400ms
+                &:before
+                    content: ""
+                    position: absolute
+                    width: 0
+                    height: 0
+                    margin-left: -0.5em
+                    top: 2px
+                    right: -2px
+                    box-sizing: border-box
+                    border: 6px solid black
+                    border-color: transparent transparent white white
+                    
+                    transform-origin: 0 0
+                    transform: rotate(135deg)
+                    
+                    box-shadow: -1px 1px 0px 0px rgba( 0, 0, 0, 0.1 )
+
         .actions
             width: 3 * $style-button-width + ( $standard-padding * 1.5 )
             display: flex
@@ -936,6 +1121,9 @@ $document-width: 816px
             .ql-editor
                 min-height: $document-width * 1.5
                 line-height: 24px
+            select
+                display: inline-block
+                margin: auto 10px
             a
                 color: $blue-color !important
                 font-weight: bold
