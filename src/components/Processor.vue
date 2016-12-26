@@ -426,9 +426,36 @@ export default {
 
         // TODO: comment.
         imageDropped( event ) {
-            C( event, -1 );
+
+            /* Handle only one upload. */
+            let image = event.dataTransfer.files[ 0 ];
+
+            /* Discard anything non image. */
+            if( image.type.match( "image.*" ) ) {
+                let reader = new FileReader(),
+                    quill = this.quill;
+
+                reader.onload = ( theImage ) => {
+
+                    /* Get the data uri of the image. */
+                    let dataURI = theImage.target.result;
+
+                    let range = quill.getSelection();
+
+                    if( !range )
+                        range = { index: 0 };
+
+                    /* Insert the image into the document. */
+                    quill.insertEmbed( range.index, "image", dataURI );
+                };
+
+                /* Read the image as a data URI. */
+                reader.readAsDataURL( image );
+            }
 
             event.preventDefault();
+
+            this.addImage = false;
         },
 
         // TODO: comment
@@ -513,7 +540,8 @@ export default {
                         v-on-clickaway="hideAddImage"></button>
                 
                 <button class="color"
-                        @click="colorPicker = !colorPicker"></button>
+                        @click="colorPicker = !colorPicker"
+                        v-on-clickaway="hideColorPicker"></button>
                 
                 <button class="select"
                         @click="addPartialSuggestions = !addPartialSuggestions"></button>
@@ -1122,6 +1150,8 @@ $document-width: 816px
             box-sizing: border-box
             font-size: 14px
             position: relative
+            p img
+                max-width: 100%
             .ql-editor
                 min-height: $document-width * 1.5
                 line-height: 24px
