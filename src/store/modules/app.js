@@ -197,10 +197,17 @@ const mutations = {
      */
     UPDATE_AUTHENTICATION( state, token ) {
         let payload = jwtDecode( token );
+		
+		/**
+		* id - 1 = Admin
+		* id - 2 = Staff
+		* id - 3 = Manager
+		**/
 
         state.user = {
-            id: payload.uid,
-            name: payload.name
+            id: payload.identity.uid,
+            name: payload.identity.name,
+			user_type_id: payload.identity.user_type_id
         };
 
         state.authenticated = true;

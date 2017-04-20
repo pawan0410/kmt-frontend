@@ -189,7 +189,7 @@ export default {
                 <button class="add" @click="documentCreationForm()"></button>
                 <button class="delete" @click="requestDocumentDeletion()" v-show="selectedDocument"></button>
 
-                <h2 class="title">My Documents</h2>
+                <h2 class="title">Users</h2>
 
                 <input type="text"
                        class="search-field"

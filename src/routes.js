@@ -2,7 +2,7 @@
 
 import VueRouter      from "vue-router";
 
-import { Documents, Login, Processor } from "./components/";
+import { Documents, Login, Processor, Backoffice } from "./components/";
 
 import C     from "./helpers";
 import store from "./store";
@@ -50,6 +50,7 @@ function checkAuthentication( to, from, next ) {
 const routes = [
     { name: "login", path: "/login", component: Login },
     { name: "documents", path: "/documents", component: Documents, beforeEnter: checkAuthentication },
+	{ name: "backoffice", path: "/backoffice", component: Backoffice, beforeEnter: checkAuthentication },
     { name: "edit-document", path: "/edit/:id", component: Processor, beforeEnter: checkAuthentication },
     { path: "*", redirect: { name: "documents" } }
 ];
