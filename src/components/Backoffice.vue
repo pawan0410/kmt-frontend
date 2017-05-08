@@ -201,35 +201,90 @@ export default {
             </header>
 
             <section class="documents">
-                <div v-for="document in documents"
+                  <!--<div v-for="document in documents"
                      class="document"
                      v-on:click="selectDocument( document )"
                      v-on:dblclick="openDocument( document.id )"
                      v-bind:class="{ selected: selectedDocument == document }">
                     <h4>{{ document.name }}</h4>
                     <p>{{ document.update_time }}</p>
-                </div>
+                </div> -->
+                
+                
+<table>
+    <tbody>
+        <tr>
+          <th>Sr No</th>
+          <th>User Name</th>
+          <th>Department</th>
+          <th>Emai Id</th>
+          <th>Edit</th>
+          <th>Dedele</th>
+        </tr>
+        <tr>
+            <td>01</td>
+            <td>Maria Anders</td>
+            <td>IT</td>
+            <td>maria@gmail.com</td>
+            <td><a href="#"><img  src="../assets/images/edit.svg"></a> </td>
+            <td><a href="#"><img src="../assets/images/delete.svg"></a> </td>
+        </tr>
+        <tr>
+            <td>01</td>
+            <td>Maria Anders</td>
+            <td>IT</td>
+            <td>maria@gmail.com</td>
+            <td><a href="#"><img  src="../assets/images/edit.svg"></a> </td>
+            <td><a href="#"><img src="../assets/images/delete.svg"></a> </td>
+        </tr>
+        <tr>
+            <td>01</td>
+            <td>Maria Anders</td>
+            <td>IT</td>
+            <td>maria@gmail.com</td>
+            <td><a href="#"><img  src="../assets/images/edit.svg"></a> </td>
+            <td><a href="#"><img src="../assets/images/delete.svg"></a> </td>
+        </tr>
+
+</tbody>
+    </table>
+                
+                
+                
             </section>
 
             <!-- Form: Create a new document -->
-            <small-modal title="Create a New Document"
+            <small-modal title="Create a New user"
                          v-if="showDocumentCreationForm"
                          @close="showDocumentCreationForm = false">
                 <input type="text"
                        autocomplete="off"
                        name="name"
-                       placeholder="Pick a name..."
-                       v-model="newDocumentName"
-                       @keyup.enter="doCreateDocument()" />
+                       placeholder="Edit name..."
+                       />
 
                 <input type="text"
                        autocomplete="off"
                        name="keyword"
-                       placeholder="Smart Keyword..."
-                       v-model="newDocumentKeyword"
-                       @keyup.enter="doCreateDocument()" />
+                       placeholder="SEdit Email..."
+                      />
+                
+                
+                <select class="dd" name="1" size="1">
+                  <option >IT</option>
+                  <option>RCM test</option>
+                  <option>three</option>
+                </select>
 
+
+<br /><br />
                 <button type="submit" @click="doCreateDocument()">Create Document</button>
+                
+             
+  
+                
+                
+                
             </small-modal>
 
             <!-- Form: Delete document -->
@@ -241,6 +296,11 @@ export default {
 
                 <button type="submit" @click="doDeleteDocument()">Delete</button>
             </small-modal>
+            
+            
+            
+            
+            
         </section>
     </div>
 </template>
@@ -361,15 +421,9 @@ $light-border-color: #eeeeee
                 margin-right: $standard-padding
                 &:hover
                     cursor: pointer
-            .delete
-                width: 20px
-                height: 34px
-                border: 0
-                background: transparent url(../assets/images/delete.svg) center center no-repeat
-                float: left
-                &:hover
-                    cursor: pointer
-
+            
+                   
+            
             .title
                 float: right
                 font-size: 20px
@@ -386,6 +440,19 @@ $light-border-color: #eeeeee
                 float: right
                 position: relative
                 z-index: 100
+                &:hover, &.active
+                    cursor: pointer
+                    background-color: $blue-color
+                    
+            .edit
+                width: 25px
+                height: 25px
+                border: 0
+                // background: transparent url() center center no-repeat
+                // background-color: red;
+                mask: url(../assets/images/edit.svg) center center no-repeat
+                float: right
+               
                 &:hover, &.active
                     cursor: pointer
                     background-color: $blue-color
@@ -434,4 +501,44 @@ $light-border-color: #eeeeee
                     font-size: 9px
                     font-weight: bold
                     color: $grey-text-color
+table
+    border-collapse: collapse
+    border: 1px solid #ccc
+    font-size: 12px
+    width: 100%
+
+    
+
+th
+  text-align: left
+  background-color: #ceedfa
+  height: 30px
+  padding: 5px
+  text-align: left
+  border-bottom: 1px solid #ddd
+  td
+    border: 1px solid black
+    font-size: 12px
+    width: 100%
+
+td
+  padding: 5px
+  text-align: left
+  border-bottom: 1px solid #ddd
+  height: 12px
+  vertical-align: center
+
+tr
+  &:hover
+    background-color: #f5f5f5
+  &:nth-child(even)
+    background-color: #f2f2f2
+                    
+.dd
+  border: 1px solid #ccc
+  font-size: 16px
+  height: 34px
+  width: 100%          
+                
 </style>
+

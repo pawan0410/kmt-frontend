@@ -13,7 +13,7 @@ const configuration = {
      * @type     {String}
      * @memberof Configuration
      */
-    apiEndpoint: "http://127.0.0.1:5000/v1/"
+    apiEndpoint: "http://192.168.8.38:8080/v1/"
 };
 
 export default configuration;

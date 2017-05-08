@@ -176,7 +176,7 @@ export default {
             <div class="overview"><span>{{ documents.length }}</span> Documents</div>
 
             <ul class="menu">               
-                <li v-if="user.user_type_id == 1 || user.user_type_id == 3 "><a href="/#/backoffice" >Backoffice</a></li>
+                <li ><a href="/#/backoffice" >Backoffice</a></li>
             </ul>
 
             <button class="sign-out" @click="signOut()"></button>
