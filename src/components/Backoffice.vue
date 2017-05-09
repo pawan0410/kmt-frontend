@@ -4,6 +4,8 @@
 import { mapGetters } from "vuex";
 
 import SmallModal from "./sub/SmallModal";
+    
+import PermissionModal from "./sub/PermissionModal";
 
 import C from "../helpers";
 
@@ -43,12 +45,15 @@ export default {
             newDocumentName: "",
 
             /* Contains keyword name to be used in creating a new document. */
-            newDocumentKeyword: ""
+            newDocumentKeyword: "",
+            
+            showFilePermission: false
         };
     },
 
     components: {
-        SmallModal
+        SmallModal,
+        PermissionModal
     },
 
     /**
@@ -164,7 +169,13 @@ export default {
         this.$store.dispatch( "getDocuments", { token: this.jwt });
     }
 };
-</script>
+</script> 
+
+    
+    
+
+
+
 
 <template>
     <div class="documents-manager">
@@ -223,7 +234,7 @@ export default {
         </tr>
         <tr>
             <td>01</td>
-            <td>Maria Anders</td>
+            <td ><a @click="showFilePermission = true"  href="#">Maria Anders</a></td>
             <td>IT</td>
             <td>maria@gmail.com</td>
             <td><a href="#"><img  src="../assets/images/edit.svg"></a> </td>
@@ -248,6 +259,13 @@ export default {
 
 </tbody>
     </table>
+                
+       
+                
+      
+     
+    
+                
                 
                 
                 
@@ -278,11 +296,7 @@ export default {
 
 
 <br /><br />
-                <button type="submit" @click="doCreateDocument()">Create Document</button>
-                
-             
-  
-                
+                <button type="submit" >Create User</button>
                 
                 
             </small-modal>
@@ -296,6 +310,32 @@ export default {
 
                 <button type="submit" @click="doDeleteDocument()">Delete</button>
             </small-modal>
+            
+            <permission-modal 
+                              v-if="showFilePermission" 
+                              @close="showFilePermission = false">
+                            <div class="popup-box">
+                           
+                            <div class="popup-row">
+
+                                  <input type="checkbox" name="checkboxG4" id="checkboxG4" class="css-checkbox" />
+                                <label for="checkboxG4" class="css-label">Option 1</label>
+                               </div>
+
+                                <div class="popup-row">
+                                 <input type="checkbox" name="checkboxG5" id="checkboxG5" class="css-checkbox" checked="checked"/>
+                                <label for="checkboxG5" class="css-label">Option 2</label>
+                               </div>
+
+                                <div class="popup-row">
+                                 <input type="checkbox" name="checkboxG6" id="checkboxG6" class="css-checkbox" />
+                                <label for="checkboxG6" class="css-label">Option 1</label>
+                               </div>
+
+                             </div>
+       
+                           
+                </permission-modal>
             
             
             
@@ -503,7 +543,7 @@ $light-border-color: #eeeeee
                     color: $grey-text-color
 table
     border-collapse: collapse
-    border: 1px solid #ccc
+    
     font-size: 12px
     width: 100%
 
@@ -512,10 +552,18 @@ table
 th
   text-align: left
   background-color: #ceedfa
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#00b4ff+0,fff4f4+100 */
+  background: #00b4ff /* Old browsers */
+  background: -moz-linear-gradient(top, #00b4ff 0%, #fff4f4 100%) /* FF3.6-15 */
+  background: -webkit-linear-gradient(top, #00b4ff 0%,#fff4f4 100%) /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom, #00b4ff 0%,#fff4f4 100%) /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00b4ff', endColorstr='#fff4f4',GradientType=0 ) /* IE6-9 */
   height: 30px
   padding: 5px
   text-align: left
   border-bottom: 1px solid #ddd
+  color:#274d5d
+
   td
     border: 1px solid black
     font-size: 12px
@@ -538,7 +586,64 @@ tr
   border: 1px solid #ccc
   font-size: 16px
   height: 34px
-  width: 100%          
+  width: 100%   
+
+input[type=checkbox].css-checkbox
+  position: absolute
+  z-index: -1000
+  left: -1000px
+  overflow: hidden
+  clip: rect(0 0 0 0)
+  height: 1px
+  width: 1px
+  margin: -1px
+  padding: 0
+  border: 0
+  + label.css-label
+    padding-left: 23px
+    height: 18px
+    display: inline-block
+    line-height: 18px
+    background-repeat: no-repeat
+    background-position: 0 0
+    font-size: 14px
+    vertical-align: middle
+    cursor: pointer
+  &:checked + label.css-label
+    background-position: 0 -18px
+
+label.css-label
+  background-image: url(http://csscheckbox.com/checkboxes/u/csscheckbox_001aa7bf6327f8fac80e0eb160776ef4.png)
+  -webkit-touch-callout: none
+  -webkit-user-select: none
+  -khtml-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  user-select: none
+
+.popup-box
+  margin: 0px
+  padding: 5px
+  background: #eeeeee
+  font: normal 16px Arial, Helvetica, sans-serif
+  width: 91%
+  color: #0698d5
+  height: auto
+  padding: 10px
+  border: solid 1px #42b5e5
+
+.popup-row
+  width: 96%
+  padding: 4px 
+  margin: 4px 0 0 0
+  background-color: #eeeeee
+  border: solid 1px #d0d5d5
+  
+
+
+
+
                 
 </style>
+
 
