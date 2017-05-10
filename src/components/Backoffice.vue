@@ -47,7 +47,12 @@ export default {
             /* Contains keyword name to be used in creating a new document. */
             newDocumentKeyword: "",
             
-            showFilePermission: false
+            showFilePermission: false,
+            
+            userName: "",
+            
+            userEmail: ""
+            
         };
     },
 
@@ -128,13 +133,13 @@ export default {
         },
 
         // TODO: comment.
-        doCreateDocument() {
-            this.$store.dispatch( "createDocument", {
+        doCreateUser() {
+            this.$store.dispatch( "createUser", {
                 token: this.jwt,
-                name: this.newDocumentName,
-                keyword: this.newDocumentKeyword
+                name: this.userName,
+                email: this.userEmail
             }).then( () => {
-                this.showDocumentCreationForm = false;
+                this.showFilePermission = false;
             });
         },
 
@@ -170,11 +175,6 @@ export default {
     }
 };
 </script> 
-
-    
-    
-
-
 
 
 <template>
@@ -220,8 +220,6 @@ export default {
                     <h4>{{ document.name }}</h4>
                     <p>{{ document.update_time }}</p>
                 </div> -->
-                
-                
 <table>
     <tbody>
         <tr>
@@ -230,7 +228,7 @@ export default {
           <th>Department</th>
           <th>Emai Id</th>
           <th>Edit</th>
-          <th>Dedele</th>
+          <th>Delete </th>
         </tr>
         <tr>
             <td>01</td>
@@ -257,16 +255,8 @@ export default {
             <td><a href="#"><img src="../assets/images/delete.svg"></a> </td>
         </tr>
 
-</tbody>
+    </tbody>
     </table>
-                
-       
-                
-      
-     
-    
-                
-                
                 
                 
             </section>
@@ -279,24 +269,16 @@ export default {
                        autocomplete="off"
                        name="name"
                        placeholder="Edit name..."
+                       v-model="userName"
                        />
 
                 <input type="text"
                        autocomplete="off"
                        name="keyword"
-                       placeholder="SEdit Email..."
+                       placeholder="Edit Email..."
                       />
-                
-                
-                <select class="dd" name="1" size="1">
-                  <option >IT</option>
-                  <option>RCM test</option>
-                  <option>three</option>
-                </select>
-
-
-<br /><br />
-                <button type="submit" >Create User</button>
+        
+                <button type="submit" @click="doCreateUser()">Create User</button>
                 
                 
             </small-modal>

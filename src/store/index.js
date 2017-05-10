@@ -6,6 +6,7 @@ import Vuex from "vuex";
 import app       from "./modules/app";
 import documents     from "./modules/documents";
 import processor from "./modules/processor";
+import users from "./modules/users";
 
 /* Activate Flux state management. */
 Vue.use( Vuex );
@@ -26,6 +27,7 @@ export default new Vuex.Store({
     modules: {
         app,
         documents,
-        processor
+        processor,
+        users
     }
 });
